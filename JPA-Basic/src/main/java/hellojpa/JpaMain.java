@@ -14,15 +14,10 @@ public class JpaMain {
         EntityTransaction tx = em.getTransaction();
         tx.begin();
         try {
-            Member member = new Member();
-            member.setId(100L);
-            member.setName("HelloJPA");
-
-            System.out.println("Before");
-            em.persist(member);
-            em.detach(member);
-            System.out.println("After");
-
+            Member member = em.find(Member.class, 150L);
+            member.setName("ZZZZZ");
+            
+            System.out.println("====================");
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
