@@ -1,5 +1,6 @@
 package jpabook;
 
+import jpabook.entity.Book;
 import jpabook.entity.Member;
 import jpabook.entity.Order;
 import jpabook.entity.OrderItem;
@@ -18,7 +19,11 @@ public class Main {
         tx.begin();
 
         try {
+            Book book = new Book();
+            book.setName("JPA");
+            book.setAuthor("김영한");
 
+            em.persist(book);
 
             tx.commit();
         } catch (Exception e) {
