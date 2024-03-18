@@ -13,10 +13,7 @@ public class Member {
     @Column(name = "NAME", nullable = false)
     private String name;
 
-//    @Column(name = "TEAM_ID")
-//    private Long teamId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
