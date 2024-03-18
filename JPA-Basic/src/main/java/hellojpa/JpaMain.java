@@ -7,44 +7,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.util.List;
 
 public class JpaMain {
 
     /*
-     * 연관관계 매핑시 고려사항 3가지
-     * 1. 다중성
-     * 2. 단방향, 양방향
-     * 3. 연관관계의 주인
-     */
-
-    /*
-     * 다중성
-     * 1. 다대일 : @ManyToOne
-     * 2. 일대다 : @OneToMany
-     * 3. 일대일 : @OneToOne
-     * 4. 다대다 : @ManyToMany
-     */
-
-    /*
-     * 단방향, 양방향
-     * - 테이블
-     *   - 외래키 하나로 양쪽 조인 가능
-     *   - 사실 방향이라는 개념이 없음
+     * 일대다 단방향 정리
+     *  - 일대다 단방향은 일대다에서 일이 연관관계의 주인
+     *  - 테이블 일대다 관계는 항상 다쪽에 외래 키가 있다
+     *  - 객체와 테이블의 차이 때문에 반대편 테이블의 외래 키를 관리하는 특이한 구조
+     *  - @JoinColumn을 꼭 사용해야 함. 그렇지 않으면 조인 테이블 방식을 사용함
+     *  - 단점
+     *   - 엔티티가 관리하는 외래 키가 다른 테이블에 있음
+     *   - 연관관계 관리를 위한 추가로 UPDATE SQL 실행
      *
-     * - 객체
-     *  - 참조용 필드가 있는 쪽으로만 참조 가능
-     *  - 한쪽만 참조하면 단방향
-     *  - 양쪽이 서로 참조하면 양방향
-     */
-
-    /*
-     * 연관관계의 주인
-     * - 테이블은 외래키 하나로 두 테이블의 연관관계를 관리
-     * - 객체 양방향 관계는 A->B, B->A 처럼 참조가 2군데
-     * - 객체의 양방향 관계는 참조가 2군데 있는 것 처럼 보이지만 사실 참조가 2군데다.
-     * - 연관관계의 주인: 외래 키를 관리하는 참조
-     * - 주인의 반대편: 외래 키에 영향을 주지 않음, 단순 조회만 가능
+     *  - 일대다 단방향 매핑보다는 다대일 양방향 매핑을 사용하자
      */
 
     public static void main(String[] args) {
@@ -55,28 +31,15 @@ public class JpaMain {
         tx.begin();
 
         try {
-
-            //저장
-            Team team = new Team();
-            team.setName("TeamA");
-            em.persist(team);
-
             Member member = new Member();
-            member.setName("member1");
+            member.setUserName("member1");
+
             em.persist(member);
 
-            team.addMember(member);
-
-//            em.flush();
-//            em.clear();
-
-            Team findTeam = em.find(Team.class, team.getId());
-            List<Member> members = findTeam.getMembers();
-            System.out.println("============================");
-            for (Member m : members) {
-                System.out.println("m = " + m.getName());
-            }
-            System.out.println("============================");
+            Team team = new Team();
+            team.setName("teamA");
+            team.getMembers().add(member);
+            em.persist(team);
 
             tx.commit();
         } catch (Exception e) {
@@ -87,5 +50,4 @@ public class JpaMain {
 
         emf.close();
     }
-
 }

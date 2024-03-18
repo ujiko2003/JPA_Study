@@ -11,10 +11,10 @@ public class Member {
     private Long id;
 
     @Column(name = "NAME", nullable = false)
-    private String name;
+    private String userName;
 
-    @ManyToOne()
-    @JoinColumn(name = "TEAM_ID")
+    @ManyToOne
+    @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
     private Team team;
 
     public Member() {
@@ -28,20 +28,11 @@ public class Member {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
-
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
-    }
-
 }
