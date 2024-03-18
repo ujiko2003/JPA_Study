@@ -1,6 +1,7 @@
 package hellojpa;
 
 import hellojpa.entity.Member;
+import hellojpa.value.RoleType;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -10,16 +11,31 @@ import javax.persistence.Persistence;
 public class JpaMain {
 
     /**
-     * hbm2ddl.auto
-     * - create: 기존 테이블 삭제 후 다시 생성(DROP + CREATE)
-     * - create-drop: create와 같으나 종료시점에 테이블 DROP
-     * - update: 변경분만 반영
-     * - validate: 엔티티와 테이블이 정상 매핑되었는지만 확인
-     * - none: 사용하지 않음
-     * <p>
-     * 운영에서는 절대 create, create-drop, update 사용하면 안된다.
-     * 운영에서는 validate, none 사용이 권장됨
-     * 자칫하면 대장애가 발생할 수 있다.
+     * hbm2ddl.auto 어노테이션
+     * - @Column : 컬럼매핑
+     * - @Temporal : 날짜 타입 매핑
+     * - @Enumerated : enum 타입 매핑
+     * - @Lob : BLOB, CLOB 매핑
+     * - @Transient : 특정 필드를 컬럼에 매핑하지 않음
+     */
+
+    /**
+     * Column 어노테이션
+     * - name : 필드와 매핑할 테이블의 컬럼 이름 (default : 객체 필드 이름)
+     * - insertable, updatable : 등록, 변경 가능 여부 설정 (default : true)
+     * - nullable : null 값의 허용 여부 설정 (default : true)
+     * - unique : 유니크 제약 조건 설정 (default : false)
+     * - columnDefinition : 데이터베이스 컬럼 정보를 직접 설정
+     * - length : 문자 길이 제약 조건 설정 (String 타입에만 사용) (default : 255)
+     */
+
+    /**
+     * Enumerated 어노테이션
+     * - EnumType.ORDINAL : enum 순서를 DB에 저장 (default)
+     * - EnumType.STRING : enum 이름을 DB에 저장
+     * - 주로 EnumType.STRING을 사용
+     * - ORDINAL은 enum 순서가 바뀌면 데이터가 꼬일 수 있음
+     * - EnumType.STRING은 enum 이름이 바뀌어도 데이터가 꼬이지 않음
      */
 
     public static void main(String[] args) {
@@ -28,15 +44,14 @@ public class JpaMain {
         EntityTransaction tx = em.getTransaction();
         tx.begin();
         try {
-            Member member = em.find(Member.class, 150L);
-            member.setName("AAAAA");
 
-            //em.detach(member);
-            em.clear();
+            Member member = new Member();
+            member.setId(3L);
+            member.setUsername("C");
+            member.setRoleType(RoleType.GUEST);
 
-            Member member2 = em.find(Member.class, 150L);
+            em.persist(member);
 
-            System.out.println("====================");
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
