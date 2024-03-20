@@ -22,13 +22,13 @@ public class Main {
             member.setTeam(team);
             em.persist(member);
 
-
             em.flush();
             em.clear();
 
-            String query = "select m from Member m left join Team t on m.username = t.name";
+            String query = "select (select avg(m1.age) from Member m1) as avgAge from Member m left join Team t on m.username = t.name";
             List<Member> result = em.createQuery(query, Member.class)
                     .getResultList();
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
