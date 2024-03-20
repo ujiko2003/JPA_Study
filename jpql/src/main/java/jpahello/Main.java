@@ -5,28 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class Main {
-
-    /*
-     * 경로 표현식
-     *  - 상태 필드(state field): 단순히 값을 저장하기 위한 필드
-     *  - 연관 필드(association field): 연관관계를 위한 필드
-     *  - 단일 값 연관 필드: @ManyToOne, @OneToOne, 대상이 엔티티
-     */
-
-    /*
-     * 경로 표현식 특징
-     *  - 상태 필드(state field): 경로 탐색의 끝, 더 이상 탐색 X
-     *  - 단일 값 연관 경로: 묵시적 내부 조인 발생, 탐색 O
-     *  - 컬렉션 값 연관 경로: 묵시적 내부 조인 발생, 탐색 X
-     *   - FROM 절에서 명시적 조인을 통해 별칭을 얻으면 별칭을 통해 탐색 가능
-     */
-
-    /*
-     * 경로 탐색을 사용한 묵시적 조인 시 주의사항
-     *  - 항상 내부 조인
-     *  - 컬렉션은 경로 탐색의 끝, 명시적 조인을 통해 별칭을 얻어야 함
-     *  - 경로 탐색은 주로 SELECT, WHERE 절에서 사용하지만 묵시적 조인으로 인해 SQL의 FROM (JOIN) 절에 영향을 줌
-     */
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
         EntityManager em = emf.createEntityManager();
@@ -35,25 +13,46 @@ public class Main {
 
         try {
 
-            Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
+            Team teamA = new Team();
+            teamA.setName("teamA");
+            em.persist(teamA);
 
-            Member member = new Member();
-            member.setUsername("관리자");
-            member.setAge(10);
-            member.setTeam(team);
-            member.setType(MemberType.ADMIN);
-            em.persist(member);
+            Team teamB = new Team();
+            teamB.setName("teamB");
+            em.persist(teamB);
+
+            Member member1 = new Member();
+            member1.setUsername("회원1");
+            member1.setTeam(teamA);
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("회원2");
+            member2.setTeam(teamA);
+            em.persist(member2);
+
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setTeam(teamB);
+            em.persist(member3);
 
             em.flush();
             em.clear();
 
-            String query = "select m.username FROM Team t join t.members m";
-            List<String> result = em.createQuery(query, String.class)
+            String query = "select distinct t FROM Team t join fetch t.members ";
+            List<Team> result = em.createQuery(query, Team.class)
                     .getResultList();
 
-            System.out.println("result = " + result);
+            System.out.println("result = " + result.size());
+
+            for (Team team : result) {
+                System.out.println("member = " + team.getName());
+                System.out.println("-> member.team = " + team.getName() + "|members = " + team.getMembers().size());
+                for (Member member : team.getMembers()) {
+                    System.out.println("-> member = " + member);
+                }
+
+            }
 
 
             tx.commit();
