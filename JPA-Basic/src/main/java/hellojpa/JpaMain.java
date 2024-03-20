@@ -2,7 +2,6 @@ package hellojpa;
 
 import hellojpa.entity.Address;
 import hellojpa.entity.Member;
-import hellojpa.entity.Period;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -20,12 +19,19 @@ public class JpaMain {
 
         try {
 
-            Member member = new Member();
-            member.setUserName("member1");
-            member.setHomeAddress(new Address("city", "street", "zipcode"));
-            member.setPeriod(new Period());
+            Address address = new Address("city", "street", "10000");
 
-            em.persist(member);
+            Member member1 = new Member();
+            member1.setUserName("member1");
+            member1.setHomeAddress(address);
+            em.persist(member1);
+
+            Address copyAddress = new Address(address.getCity(), address.getStreet(), address.getZipcode());
+
+            Member member2 = new Member();
+            member2.setUserName("member2");
+            member2.setHomeAddress(copyAddress);
+            em.persist(member2);
 
             tx.commit();
         } catch (Exception e) {
