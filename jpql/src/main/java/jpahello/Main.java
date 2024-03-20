@@ -26,11 +26,11 @@ public class Main {
             em.flush();
             em.clear();
 
-            String query = "select nullif(m.username, '관리자') from Member m ";
-            List<String> result = em.createQuery(query, String.class)
+            String query = "select  locate('de','abcdefg') FROM Member m";
+            List<Integer> result = em.createQuery(query, Integer.class)
                     .getResultList();
 
-            for (String s : result) {
+            for (Integer s : result) {
                 System.out.println("s = " + s);
             }
 
