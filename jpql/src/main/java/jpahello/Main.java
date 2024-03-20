@@ -12,17 +12,25 @@ public class Main {
 
         try {
 
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setAge(10);
-            em.persist(member);
+            for (int i=0; i<100; i++) {
+                Member member = new Member();
+                member.setUsername("member" + i);
+                member.setAge(i);
+                em.persist(member);
+            }
 
-            List<MemberDTO> resultList = em.createQuery("select new jpahello.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
+
+            em.flush();
+            em.clear();
+
+            List<Member> result = em.createQuery("select m from Member m order by m.age desc ", Member.class)
+                    .setFirstResult(1)
+                    .setMaxResults(10)
                     .getResultList();
 
-            for (MemberDTO memberDTO : resultList) {
-                System.out.println("memberDTO = " + memberDTO.getUsername());
-
+            System.out.println("result.size = " + result.size());
+            for (Member member1 : result) {
+                System.out.println("member1 = " + member1);
             }
 
 
