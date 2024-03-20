@@ -17,11 +17,13 @@ public class Main {
             member.setAge(10);
             em.persist(member);
 
-            em.createQuery("select m from Member m where m.username = :username", Member.class)
-                    .setParameter("username", "member1")
-                    .getSingleResult();
+            List<MemberDTO> resultList = em.createQuery("select new jpahello.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
+                    .getResultList();
 
+            for (MemberDTO memberDTO : resultList) {
+                System.out.println("memberDTO = " + memberDTO.getUsername());
 
+            }
 
 
             tx.commit();
