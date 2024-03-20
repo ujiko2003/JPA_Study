@@ -1,25 +1,28 @@
-package hellojpa;
+package jpahello;
 
-import hellojpa.entity.Member;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import javax.persistence.*;
 import java.util.List;
 
-public class JpaMain {
-
+public class Main {
     public static void main(String[] args) {
-
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
 
         try {
-            List<Member> result = em.createQuery("select m from Member m where m.userName like '%kim%'", Member.class)
-                    .getResultList();
+
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setAge(10);
+            em.persist(member);
+
+            em.createQuery("select m from Member m where m.username = :username", Member.class)
+                    .setParameter("username", "member1")
+                    .getSingleResult();
+
+
+
 
             tx.commit();
         } catch (Exception e) {
@@ -28,5 +31,7 @@ public class JpaMain {
             em.close();
         }
         emf.close();
+
     }
+
 }
